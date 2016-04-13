@@ -1,0 +1,143 @@
+package xeed.library.xposed;
+
+import java.util.HashMap;
+import java.util.Locale;
+
+import android.content.*;
+import android.content.res.Resources;
+import android.os.Build;
+import de.robv.android.xposed.*;
+import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
+
+public abstract class BaseModule implements IXposedHookLoadPackage
+{
+    public static final int SDK = Build.VERSION.SDK_INT;
+    
+    private final HashMap<String, Class<?>> classDb = new HashMap<String, Class<?>>();
+    
+    protected XSharedPreferences mPrefs = null;
+    protected Context mCtx = null;
+    
+    private boolean mDebug;
+    
+    protected abstract int getVersion();
+    protected abstract String getLogTag();
+    protected abstract void reloadPrefs(final Intent i);
+    protected abstract void handlePackage(final String pkgName, final ClassLoader src) throws Throwable;
+    
+    protected String getMainPackage() { return "android"; }
+    protected boolean shouldHookPWM() { return true; }
+    protected void initPWM(final Object pwm) { }
+    
+    protected final void log(final String txt)
+    {
+        XposedBridge.log(getLogTag() + ": " + txt);
+    }
+    
+    protected final void dlog(final String txt)
+    {
+        if (mDebug) log(txt);
+    }
+    
+    protected final void log(final Throwable t)
+    {
+        XposedBridge.log(getLogTag() + ": EXCEPTION");
+        XposedBridge.log(t);
+    }
+    
+    @Override
+    public final void handleLoadPackage(final LoadPackageParam lpp) throws Throwable
+    {
+        if (lpp.packageName.equals("android"))
+        {
+            log("Android version " + SDK + ", module version " + getVersion());
+            final Class<?> cPWM = tryFindClass(lpp.classLoader, "com.android.server.policy.PhoneWindowManager", "com.android.internal.policy.impl.PhoneWindowManager");
+            if (shouldHookPWM()) XposedBridge.hookAllMethods(cPWM, "init", handlePWMI);
+            if ("android".equals(getMainPackage()))
+            {
+                classDb.put(ClassDB.PHONE_WINDOW_MANAGER, cPWM);
+                classDb.put(ClassDB.INPUT_MANAGER, tryFindClass(lpp.classLoader, "com.android.server.input.InputManagerService", "com.android.server.wm.InputManager", "com.android.server.InputManager"));
+                classDb.put(ClassDB.NOTIFICATION_MANAGER, tryFindClass(lpp.classLoader, "com.android.server.notification.NotificationManagerService", "com.android.server.NotificationManagerService"));
+            }
+        }
+        if (lpp.packageName.equals(getMainPackage()))
+        {
+            mPrefs = new XSharedPreferences(getPackage(), getLogTag().toLowerCase(Locale.ENGLISH) + "settings");
+            mPrefs.reload();
+            mDebug = mPrefs.getBoolean("debugLog", false);
+            log("Debug log is " + (mDebug ? "en" : "dis") + "abled");
+            reloadPrefs(new Intent());
+        }
+        handlePackage(lpp.packageName, lpp.classLoader);
+    }
+    
+    protected static final Class<?> tryFindClass(final ClassLoader loader, final String... names)
+    {
+        for (final String s : names)
+            try
+            {
+                final Class<?> c = XposedHelpers.findClass(s, loader);
+                if (c != null) return c;
+            }
+            catch (final Throwable t) { }
+        throw new RuntimeException("Class not found: " + names[0].substring(names[0].lastIndexOf(".") + 1));
+    }
+    
+    protected final void registerWithContext(final Context c)
+    {
+        mCtx = c;
+        mCtx.registerReceiver(new BroadcastReceiver()
+        {
+            public final void onReceive(final Context c, final Intent i)
+            {
+                mPrefs.reload();
+                mDebug = mPrefs.getBoolean("debugLog", false);
+                reloadPrefs(i);
+                dlog("Preferences reloaded");
+            }
+        }, new IntentFilter(getPackage() + ".Update"), null, null);
+    }
+    
+    private final XC_MethodHook handlePWMI = new XC_MethodHook()
+    {
+        @Override
+        protected final void afterHookedMethod(final MethodHookParam mhp)
+        {
+            log("PWM init");
+            registerWithContext((Context)mhp.args[0]);
+            initPWM(mhp.thisObject);
+        }
+    };
+    
+    protected final boolean isReady() { return mCtx != null; }
+    
+    protected final String getPackage()
+    {
+        return getClass().getPackage().getName();
+    }
+    
+    protected final Class<?> getDbClass(final String key)
+    {
+        return classDb.get(key);
+    }
+    
+    protected final String getString(final int id, final Object... args)
+    {
+        try
+        {
+            final Resources r = mCtx.getPackageManager().getResourcesForApplication(getPackage());
+            return r.getString(id, args);
+        }
+        catch (final Exception ex)
+        {
+            log(ex);
+            return "ERROR: " + ex.getLocalizedMessage();
+        }
+    }
+    
+    protected static final class ClassDB
+    {
+        public static final String INPUT_MANAGER = "InputManager", PHONE_WINDOW_MANAGER = "PhoneWindowManager";
+        public static final String NOTIFICATION_MANAGER = "NotificationManager";
+    }
+}

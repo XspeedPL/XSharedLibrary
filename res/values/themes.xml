@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="dark00">#FF000000</color>
+    <color name="dark10">#FF0A0A0A</color>
+    <color name="dark20">#FF141414</color>
+    <color name="dark30">#FF1E1E1E</color>
+    <color name="dark40">#FF282828</color>
+    <color name="dark50">#FF323232</color>
+    <color name="dark70">#FF464646</color>
+    <color name="gray">#FF808080</color>
+    <style name="Theme.Compat.Black" parent="Theme.AppCompat">
+        <item name="android:windowBackground">@color/dark00</item>
+        <item name="colorPrimary">@color/dark20</item>
+        <item name="colorPrimaryDark">@color/dark10</item>
+        <item name="colorAccent">@color/gray</item>
+        <item name="colorControlNormal">@color/dark50</item>
+        <item name="colorControlActivated">@color/dark70</item>
+        <item name="colorControlHighlight">@color/dark70</item>
+        <item name="colorButtonNormal">@color/dark40</item>
+        <item name="colorSwitchThumbNormal">#FFFF00FF</item>
+    </style>
+    <style name="Theme.Compat.Black.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@color/dark00</item>
+        <item name="colorPrimary">@color/dark20</item>
+        <item name="colorPrimaryDark">@color/dark10</item>
+        <item name="colorAccent">@color/gray</item>
+        <item name="colorControlNormal">@color/dark50</item>
+        <item name="colorControlActivated">@color/dark70</item>
+        <item name="colorControlHighlight">@color/dark70</item>
+        <item name="colorButtonNormal">@color/dark40</item>
+        <item name="colorSwitchThumbNormal">#FFFF00FF</item>
+    </style>
+</resources>
