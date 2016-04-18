@@ -4,8 +4,12 @@
     <string name="btn_add_new">Add new</string>
     <string name="btn_remove">Remove</string>
     
+    <string name="diag_update">Reboot your device to complete the updating process\n
+Installed version: %1$s, Active version: %2$s</string>
+
+    <string name="diag_reboot">Activate this module in the Xposed Installer and reboot your device to complete the installation process</string>
+
     <string name="diag_prf_sav">Preferences saved</string>
-    
     <string name="diag_pick_app">Pick an application</string>
     
     <string name="pref_g_general">General options</string>

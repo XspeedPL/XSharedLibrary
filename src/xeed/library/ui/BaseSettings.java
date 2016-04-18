@@ -4,18 +4,22 @@ import android.annotation.SuppressLint;
 import android.content.*;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.*;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.support.v4.preference.PreferenceFragmentCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import xeed.library.common.R;
 
 @SuppressLint("NewApi")
 public abstract class BaseSettings extends AppCompatActivity implements OnPreferenceChangeListener
 {
-    private static int mActivityTh, mDialogTh;
+    private static int mActTh = R.style.Theme_Compat, mDiagTh = R.style.Theme_Compat_Dialog;
     
     private SettingsFragment mFrag = null;
     
@@ -34,6 +38,14 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
     protected enum Category
     {
         general, fixes, info
+    }
+    
+    protected static final int getActiveVer() { return -1; }
+    
+    protected final int getCurrentVer()
+    {
+        try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; }
+        catch (final Exception ex) { return -1; }
     }
     
     protected final void addPreferencesToCategory(final int resId, final Category cat)
@@ -64,37 +76,50 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
     {
         super.onCreate(b);
         reloadThemes(getSharedPreferences(getPrefsName(), MODE_WORLD_READABLE));
-        setTheme(mActivityTh);
+        setTheme(getActTh());
+        setContentView(R.layout.settings);
+        if (getActiveVer() != getCurrentVer())
+        {
+            final TextView tv = (TextView)findViewById(R.id.update_msg);
+            tv.setVisibility(View.VISIBLE);
+            tv.setBackgroundResource(getStyleAttribute(this, R.attr.colorPrimary));
+            tv.setTextColor(getColor(getStyleAttribute(this, R.attr.colorAccent)));
+            if (getActiveVer() == -1) tv.setText(R.string.diag_reboot);
+            else tv.setText(getString(R.string.diag_update, getCurrentVer(), getActiveVer()));
+        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, new SettingsFragment()).commit();
     }
     
-    @Override
-    protected final void onPostCreate(final Bundle b)
+    private static int getStyleAttribute(final Context c, final int resId)
     {
-        super.onPostCreate(b);
-        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
+        TypedValue tv = new TypedValue();
+        TypedArray a = c.obtainStyledAttributes(tv.data, new int[] { resId });
+        final int ret = a.getResourceId(0, 0);
+        a.recycle();
+        return ret;
     }
     
-    public static final int getActTh() { return mActivityTh; }
+    public static final int getActTh() { return mActTh; }
     
-    public static final int getDiagTh() { return mDialogTh; }
+    public static final int getDiagTh() { return mDiagTh; }
     
     public static final void reloadThemes(final SharedPreferences prefs)
     {
         final int i = prefs.getInt("theme", 0);
         if (i == 0)
         {
-            mActivityTh = R.style.Theme_AppCompat;
-            mDialogTh = R.style.Theme_AppCompat_Dialog_Alert;
+            mActTh = R.style.Theme_Compat;
+            mDiagTh = R.style.Theme_Compat_Dialog;
         }
         else if (i == 1)
         {
-            mActivityTh = R.style.Theme_AppCompat_Light;
-            mDialogTh = R.style.Theme_AppCompat_Light_Dialog_Alert;
+            mActTh = R.style.Theme_Compat_Light;
+            mDiagTh = R.style.Theme_Compat_Light_Dialog;
         }
         else
         {
-            mActivityTh = R.style.Theme_Compat_Black;
-            mDialogTh = R.style.Theme_Compat_Black_Dialog_Alert;
+            mActTh = R.style.Theme_Compat_Black;
+            mDiagTh = R.style.Theme_Compat_Black_Dialog;
         }
     }
     
@@ -133,7 +158,6 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
             else if (key.equals("theme"))
             {
                 reloadThemes(sp);
-                mActivity.setTheme(getActTh());
                 mActivity.recreate();
             }
             else mChange = true;

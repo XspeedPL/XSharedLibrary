@@ -1,6 +1,5 @@
 package xeed.library.xposed;
 
-import java.util.HashMap;
 import java.util.Locale;
 
 import android.content.*;
@@ -13,8 +12,7 @@ public abstract class BaseModule implements IXposedHookLoadPackage
 {
     public static final int SDK = Build.VERSION.SDK_INT;
     
-    private final HashMap<String, Class<?>> classDb = new HashMap<String, Class<?>>();
-    
+    protected final String mPackage;
     protected XSharedPreferences mPrefs = null;
     protected Context mCtx = null;
     
@@ -28,6 +26,11 @@ public abstract class BaseModule implements IXposedHookLoadPackage
     protected String getMainPackage() { return "android"; }
     protected boolean shouldHookPWM() { return true; }
     protected void initPWM(final Object pwm) { }
+    
+    public BaseModule()
+    {
+        mPackage = getClass().getPackage().getName();
+    }
     
     protected final void log(final String txt)
     {
@@ -51,14 +54,8 @@ public abstract class BaseModule implements IXposedHookLoadPackage
         if (lpp.packageName.equals("android"))
         {
             log("Android version " + SDK + ", module version " + getVersion());
-            final Class<?> cPWM = tryFindClass(lpp.classLoader, "com.android.server.policy.PhoneWindowManager", "com.android.internal.policy.impl.PhoneWindowManager");
+            final Class<?> cPWM = tryFindClass(lpp.classLoader, ClassDB.PHONE_WINDOW_MANAGER);
             if (shouldHookPWM()) XposedBridge.hookAllMethods(cPWM, "init", handlePWMI);
-            if ("android".equals(getMainPackage()))
-            {
-                classDb.put(ClassDB.PHONE_WINDOW_MANAGER, cPWM);
-                classDb.put(ClassDB.INPUT_MANAGER, tryFindClass(lpp.classLoader, "com.android.server.input.InputManagerService", "com.android.server.wm.InputManager", "com.android.server.InputManager"));
-                classDb.put(ClassDB.NOTIFICATION_MANAGER, tryFindClass(lpp.classLoader, "com.android.server.notification.NotificationManagerService", "com.android.server.NotificationManagerService"));
-            }
         }
         if (lpp.packageName.equals(getMainPackage()))
         {
@@ -67,6 +64,10 @@ public abstract class BaseModule implements IXposedHookLoadPackage
             mDebug = mPrefs.getBoolean("debugLog", false);
             log("Debug log is " + (mDebug ? "en" : "dis") + "abled");
             reloadPrefs(new Intent());
+        }
+        if (lpp.packageName.equals(mPackage))
+        {
+            XposedHelpers.findAndHookMethod("xeed.library.ui.BaseSettings", lpp.classLoader, "getActiveVer", XC_MethodReplacement.returnConstant(getVersion()));
         }
         handlePackage(lpp.packageName, lpp.classLoader);
     }
@@ -116,11 +117,6 @@ public abstract class BaseModule implements IXposedHookLoadPackage
         return getClass().getPackage().getName();
     }
     
-    protected final Class<?> getDbClass(final String key)
-    {
-        return classDb.get(key);
-    }
-    
     protected final String getString(final int id, final Object... args)
     {
         try
@@ -137,7 +133,8 @@ public abstract class BaseModule implements IXposedHookLoadPackage
     
     protected static final class ClassDB
     {
-        public static final String INPUT_MANAGER = "InputManager", PHONE_WINDOW_MANAGER = "PhoneWindowManager";
-        public static final String NOTIFICATION_MANAGER = "NotificationManager";
+        public static final String[] INPUT_MANAGER = new String[] { "com.android.server.input.InputManagerService", "com.android.server.wm.InputManager", "com.android.server.InputManager" };
+        public static final String[] PHONE_WINDOW_MANAGER = new String[] { "com.android.server.policy.PhoneWindowManager", "com.android.internal.policy.impl.PhoneWindowManager" };
+        public static final String[] NOTIFICATION_MANAGER = new String[] { "com.android.server.notification.NotificationManagerService", "com.android.server.NotificationManagerService" };
     }
 }

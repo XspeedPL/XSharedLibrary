@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="color_1">#FF282828</color>
+    <color name="color_2">#FF1E1E1E</color>
+    <color name="color_3">#FF141414</color>
+    <color name="color_4">#FF0A0A0A</color>
+    <style name="Theme.Compat" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/color_3</item>
+        <item name="colorPrimaryDark">@color/color_4</item>
+        <item name="colorAccent">@color/color_1</item>
+    </style>
+    <style name="Theme.Compat.Light" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/color_1</item>
+        <item name="colorPrimaryDark">@color/color_2</item>
+        <item name="colorAccent">@color/color_4</item>
+    </style>
+    <style name="Theme.Compat.Dialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="colorPrimary">@color/color_3</item>
+        <item name="colorPrimaryDark">@color/color_4</item>
+        <item name="colorAccent">@color/color_1</item>
+    </style>
+    <style name="Theme.Compat.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/color_1</item>
+        <item name="colorPrimaryDark">@color/color_2</item>
+        <item name="colorAccent">@color/color_4</item>
+    </style>
+    
     <color name="dark00">#FF000000</color>
     <color name="dark10">#FF0A0A0A</color>
     <color name="dark20">#FF141414</color>
@@ -17,9 +42,9 @@
         <item name="colorControlActivated">@color/dark70</item>
         <item name="colorControlHighlight">@color/dark70</item>
         <item name="colorButtonNormal">@color/dark40</item>
-        <item name="colorSwitchThumbNormal">#FFFF00FF</item>
+        <item name="colorSwitchThumbNormal">@color/dark40</item>
     </style>
-    <style name="Theme.Compat.Black.Dialog.Alert" parent="Theme.AppCompat.Dialog.Alert">
+    <style name="Theme.Compat.Black.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowBackground">@color/dark00</item>
         <item name="colorPrimary">@color/dark20</item>
         <item name="colorPrimaryDark">@color/dark10</item>
@@ -28,6 +53,6 @@
         <item name="colorControlActivated">@color/dark70</item>
         <item name="colorControlHighlight">@color/dark70</item>
         <item name="colorButtonNormal">@color/dark40</item>
-        <item name="colorSwitchThumbNormal">#FFFF00FF</item>
+        <item name="colorSwitchThumbNormal">@color/dark40</item>
     </style>
 </resources>
