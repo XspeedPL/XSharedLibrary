@@ -59,7 +59,7 @@ public abstract class BaseModule implements IXposedHookLoadPackage
         }
         if (lpp.packageName.equals(getMainPackage()))
         {
-            mPrefs = new XSharedPreferences(getPackage(), getLogTag().toLowerCase(Locale.ENGLISH) + "settings");
+            mPrefs = new XSharedPreferences(mPackage, getLogTag().toLowerCase(Locale.ENGLISH) + "settings");
             mPrefs.reload();
             mDebug = mPrefs.getBoolean("debugLog", false);
             log("Debug log is " + (mDebug ? "en" : "dis") + "abled");
@@ -96,7 +96,7 @@ public abstract class BaseModule implements IXposedHookLoadPackage
                 reloadPrefs(i);
                 dlog("Preferences reloaded");
             }
-        }, new IntentFilter(getPackage() + ".Update"), null, null);
+        }, new IntentFilter(mPackage + ".Update"), null, null);
     }
     
     private final XC_MethodHook handlePWMI = new XC_MethodHook()
@@ -112,16 +112,11 @@ public abstract class BaseModule implements IXposedHookLoadPackage
     
     protected final boolean isReady() { return mCtx != null; }
     
-    protected final String getPackage()
-    {
-        return mPackage;
-    }
-    
     protected final String getString(final int id, final Object... args)
     {
         try
         {
-            final Resources r = mCtx.getPackageManager().getResourcesForApplication(getPackage());
+            final Resources r = mCtx.getPackageManager().getResourcesForApplication(mPackage);
             return r.getString(id, args);
         }
         catch (final Exception ex)

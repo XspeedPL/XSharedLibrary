@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.*;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.preference.PreferenceFragmentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
@@ -83,7 +84,7 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
             final TextView tv = (TextView)findViewById(R.id.update_msg);
             tv.setVisibility(View.VISIBLE);
             tv.setBackgroundResource(getStyleAttribute(this, R.attr.colorPrimary));
-            tv.setTextColor(getColor(getStyleAttribute(this, R.attr.colorAccent)));
+            tv.setTextColor(ContextCompat.getColor(this, getStyleAttribute(this, R.attr.colorAccent)));
             if (getActiveVer() == -1) tv.setText(R.string.diag_reboot);
             else tv.setText(getString(R.string.diag_update, getCurrentVer(), getActiveVer()));
         }
