@@ -114,7 +114,7 @@ public abstract class BaseModule implements IXposedHookLoadPackage
     
     protected final String getPackage()
     {
-        return getClass().getPackage().getName();
+        return mPackage;
     }
     
     protected final String getString(final int id, final Object... args)
