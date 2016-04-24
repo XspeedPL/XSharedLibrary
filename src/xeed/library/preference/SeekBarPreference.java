@@ -33,10 +33,10 @@ public final class SeekBarPreference extends DialogPreference implements SeekBar
         mBar = new TextSeekBar(c, as);
         mBar.setOnSeekBarChangeListener(this);
         mBar.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
-        int px = (int)mBar.getTextSize();
-        mBar.setPadding(px, px, px, 0);
+        int px = (int)(mBar.getTextSize() * 3 / 2);
+        mBar.setPadding(px, 0, px, 0);
 		final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        px = Utils.getPx(getContext(), 10);
+        px = (int)Utils.getPx(getContext(), 10);
         lp.setMargins(px, px * 2, px, px);
         mBar.setLayoutParams(lp);
         mView.addView(mBar);

@@ -159,7 +159,7 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
             else if (key.equals("theme"))
             {
                 reloadThemes(sp);
-                mActivity.recreate();
+                mActivity.finish();
             }
             else mChange = true;
             mActivity.onPreferenceChanged(getPreferenceManager(), getPreferenceManager().getSharedPreferences(), key);

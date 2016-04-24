@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.widget.AppCompatSeekBar;
@@ -15,6 +16,7 @@ import android.util.AttributeSet;
 import android.widget.AbsSeekBar;
 import android.widget.TextView;
 import xeed.library.common.R;
+import xeed.library.common.Utils;
 
 public final class TextSeekBar extends AppCompatSeekBar
 {
@@ -38,8 +40,15 @@ public final class TextSeekBar extends AppCompatSeekBar
 		mPaint.setTextAlign(Align.CENTER);
 		mPaint.setAntiAlias(true);
 		setTextAppearance(R.style.TextAppearance_AppCompat_Caption);
+		setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom());
 	}
 
+	@Override
+	public final void setPadding(final int i1, final int i2, final int i3, final int i4)
+	{
+	    super.setPadding(i1, (int)(i2 + getTextSize() + Utils.getPx(getContext(), 2.5F)), i3, i4);
+	}
+	
     @TargetApi(23)
     @SuppressWarnings("deprecation")
 	public final void setTextAppearance(final int resId)
@@ -77,6 +86,7 @@ public final class TextSeekBar extends AppCompatSeekBar
 	public final void onDraw(final Canvas c)
 	{
 		super.onDraw(c);
-		c.drawText(String.valueOf(mMult * getProgress()) + mSuffix, getThumbCompat().getBounds().left + getPaddingLeft(), getPaddingTop(), mPaint);
+		final Rect r = getThumbCompat().getBounds();
+		c.drawText(String.valueOf(mMult * getProgress()) + mSuffix, r.left + getPaddingLeft(), getPaddingTop() - Utils.getPx(getContext(), 2.5F), mPaint);
 	}
 }
