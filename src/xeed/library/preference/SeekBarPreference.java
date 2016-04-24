@@ -1,100 +1,75 @@
 package xeed.library.preference;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.view.Gravity;
-import android.view.View;
+import android.view.ViewGroup;
 import android.preference.DialogPreference;
 import android.widget.*;
+import xeed.library.common.R;
+import xeed.library.common.Utils;
+import xeed.library.view.TextSeekBar;
 
 public final class SeekBarPreference extends DialogPreference implements SeekBar.OnSeekBarChangeListener
 {
-	private static final String androidns = "http://schemas.android.com/apk/res/android";
+    private final FrameLayout mView;
+	private final TextSeekBar mBar;
 
-	private SeekBar mSeekBar;
-	private TextView mSplashText, mValueText;
-	private final Context mContext;
+	private int mDefault, mValue, mMult;
 
-	private String mDialogMessage, mSuffix;
-	private int mDefault, mMax;
-	private int mValue;
-
-	private final String getStr(final String key, final AttributeSet a)
+	@SuppressLint("InflateParams")
+    public SeekBarPreference(final Context c, final AttributeSet as)
 	{
-		final int resId = a.getAttributeResourceValue(androidns, "dialogMessage", 0);
-		if (resId != 0) return mContext.getResources().getString(resId);
-		else return a.getAttributeValue(androidns, "dialogMessage");
+		super(c, as);
+		final TypedArray ta = c.getResources().obtainAttributes(as, new int[] { android.R.attr.defaultValue, R.attr.maxValue, R.attr.textValueMult });
+		mDefault = ta.getInt(0, 300);
+		mMult = ta.getInt(2, 1);
+		ta.recycle();
+		mView = new FrameLayout(getContext());
+        mBar = new TextSeekBar(c, as);
+        mBar.setOnSeekBarChangeListener(this);
+        mBar.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+        int px = (int)mBar.getTextSize();
+        mBar.setPadding(px, px, px, 0);
+		final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+        px = Utils.getPx(getContext(), 10);
+        lp.setMargins(px, px * 2, px, px);
+        mBar.setLayoutParams(lp);
+        mView.addView(mBar);
 	}
 
-	public SeekBarPreference(final Context c, final AttributeSet a)
-	{ 
-		super(c, a); 
-		mContext = c;
-		mDialogMessage = getStr("dialogMessage", a);
-		mSuffix = a.getAttributeValue(androidns, "text");
-		mDefault = a.getAttributeIntValue(androidns, "defaultValue", 300);
-		mMax = a.getAttributeIntValue(androidns, "max", 1500) / 5;
-		mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
-	}
-
-	public SeekBarPreference(final Context c, final AttributeSet attrs, final String dlgMsg, final String suffix)
+    @Override
+	protected void onPrepareDialogBuilder(final Builder b)
 	{
-		super(c, attrs);
-		mContext = c;
-		mDialogMessage = dlgMsg;
-		mSuffix = suffix;
-		mDefault = 300;
-		mMax = 150;
-		mValue = 300;
-	}
-
-	@Override 
-	protected final View onCreateDialogView()
-	{
-		mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
-		final LinearLayout.LayoutParams params;
-		final LinearLayout layout = new LinearLayout(mContext);
-		layout.setOrientation(LinearLayout.VERTICAL);
-		layout.setPadding(6, 6, 6, 6);
-		mSplashText = new TextView(mContext);
-		mSplashText.setTextColor(0xffaaaaaa);
-		mSplashText.setPadding(28, 2, 0, 2);
-		if (mDialogMessage != null) mSplashText.setText(mDialogMessage);
-		layout.addView(mSplashText);
-		mValueText = new TextView(mContext);
-		mValueText.setGravity(Gravity.CENTER_HORIZONTAL);
-		mValueText.setTextSize(32);
-		mValueText.setTextColor(0xffffffff);
-		params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-		layout.addView(mValueText, params);
-		mSeekBar = new SeekBar(mContext);
-		mSeekBar.setMax(mMax);
-		mSeekBar.setOnSeekBarChangeListener(this);
-		mSeekBar.setProgress(mValue / 5);
-		layout.addView(mSeekBar, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-		return layout;
+        b.setTitle(getSummary());
+		mValue = getPersistedInt(mDefault) * mMult;
+		mBar.setProgress(mValue / mMult);
+		if (mView.getParent() != null) ((ViewGroup)mView.getParent()).removeView(mView);
+		b.setView(mView);
 	}
 	
 	@Override
 	protected final void onSetInitialValue(final boolean restore, final Object def)  
 	{
 		super.onSetInitialValue(restore, def);
-		if (restore) mValue = shouldPersist() ? getPersistedInt(mDefault) : mDefault;
-		else if (shouldPersist()) persistInt(mValue = mDefault);
+		if (restore) mValue = getPersistedInt(mDefault) * mMult;
+		else persistInt((mValue = mDefault) / mMult);
 	}
 
 	@Override
 	public final void onProgressChanged(final SeekBar sb, final int value, final boolean user)
 	{
-		if (user) mValue = value * 5;
-		mValueText.setText((value * 5) + mSuffix);
+		mValue = value * mMult;
 	}
 
 	@Override
-	protected final void onDialogClosed(final boolean result)
+	public final void onClick(final DialogInterface di, final int pos)
 	{
-		if (result && shouldPersist()) persistInt(mValue);
-		super.onDialogClosed(result);
+		if (pos == Dialog.BUTTON_POSITIVE) persistInt(mValue);
 	}
 
 	@Override
