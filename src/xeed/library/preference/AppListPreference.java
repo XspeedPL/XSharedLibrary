@@ -19,6 +19,7 @@ import android.view.*;
 import android.widget.*;
 import xeed.library.common.AppInfo;
 import xeed.library.common.R;
+import xeed.library.common.Utils;
 import xeed.library.ui.AppDialog;
 import xeed.library.ui.BaseSettings;
 
@@ -37,7 +38,7 @@ public final class AppListPreference extends DialogPreference
     {
         super.onPrepareDialogBuilder(b);
         data.clear();
-        data.addAll(deserialize(getPersistedString("")));
+        data.addAll(Utils.deserialize(getPersistedString("")));
         lv = new ListView(getContext());
         lv.setAdapter(new AppAdapter());
         new LoadTask().execute();
@@ -47,7 +48,7 @@ public final class AppListPreference extends DialogPreference
             @Override
             public final void onClick(final DialogInterface di, final int i)
             {
-                persistString(serialize(data));
+                persistString(Utils.serialize(data));
             }
         });
         b.setNeutralButton(R.string.btn_add_new, null);
@@ -97,22 +98,6 @@ public final class AppListPreference extends DialogPreference
                 }, BaseSettings.getDiagTh()).show();
             }
         });
-    }
-    
-    private static final String serialize(final Iterable<AppInfo<String>> data)
-    {
-        final StringBuilder sb = new StringBuilder();
-        for (final AppInfo<String> ai : data)
-            sb.append(ai.data).append(" ");
-        return sb.toString();
-    }
-    
-    private static final ArrayList<AppInfo<String>> deserialize(final String data)
-    {
-        final String[] arr = data.split(" ");
-        final ArrayList<AppInfo<String>> ret = new ArrayList<AppInfo<String>>(arr.length);
-        for (final String s : arr) if (s.length() > 0) ret.add(new AppInfo<String>(s));
-        return ret;
     }
     
     private final class AppAdapter extends BaseAdapter implements View.OnClickListener

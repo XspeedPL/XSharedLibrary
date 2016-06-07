@@ -22,10 +22,15 @@ public final class TextSeekBar extends AppCompatSeekBar
 {
     private final TextView mAttrs;
 	private String mSuffix;
-	private final Paint mPaint;
+	private Paint mPaint = null;
 	private final int mMult, mMax;
 	
-	public TextSeekBar(Context c, AttributeSet as)
+	public TextSeekBar(final Context c)
+	{
+	    this(c, null);
+	}
+	
+	public TextSeekBar(final Context c, final AttributeSet as)
 	{
 		super(c, as);
 		mAttrs = new TextView(c);
@@ -39,14 +44,20 @@ public final class TextSeekBar extends AppCompatSeekBar
 		mPaint = new Paint();
 		mPaint.setTextAlign(Align.CENTER);
 		mPaint.setAntiAlias(true);
-		setTextAppearance(R.style.TextAppearance_AppCompat_Caption);
+		setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+		setTextSize(Utils.dpPx(getContext(), 16));
 		setPadding(getPaddingLeft(), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+	}
+	
+	public TextSeekBar(final Context c, final AttributeSet as, final int style)
+	{
+	    this(c, as);
 	}
 
 	@Override
 	public final void setPadding(final int i1, final int i2, final int i3, final int i4)
 	{
-	    super.setPadding(i1, (int)(i2 + getTextSize() + Utils.getPx(getContext(), 2.5F)), i3, i4);
+	    super.setPadding(i1, (int)(i2 + getTextSize() + Utils.dpPx(getContext(), 5)), i3, i4);
 	}
 	
     @TargetApi(23)
@@ -60,9 +71,14 @@ public final class TextSeekBar extends AppCompatSeekBar
         mPaint.setTypeface(mAttrs.getTypeface());
 	}
 	
+    public final void setTextSize(final float px)
+    {
+        mPaint.setTextSize(px);
+    }
+    
     public final float getTextSize()
     {
-        return mPaint.getTextSize();
+        return mPaint == null ? 0 : mPaint.getTextSize();
     }
     
     @TargetApi(16)
@@ -87,6 +103,6 @@ public final class TextSeekBar extends AppCompatSeekBar
 	{
 		super.onDraw(c);
 		final Rect r = getThumbCompat().getBounds();
-		c.drawText(String.valueOf(mMult * getProgress()) + mSuffix, r.left + getPaddingLeft(), getPaddingTop() - Utils.getPx(getContext(), 2.5F), mPaint);
+		c.drawText(String.valueOf(mMult * getProgress()) + mSuffix, r.left + getPaddingLeft(), getPaddingTop() - Utils.dpPx(getContext(), 5), mPaint);
 	}
 }

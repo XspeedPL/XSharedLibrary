@@ -25,18 +25,19 @@ public final class SeekBarPreference extends DialogPreference implements SeekBar
     public SeekBarPreference(final Context c, final AttributeSet as)
 	{
 		super(c, as);
-		final TypedArray ta = c.getResources().obtainAttributes(as, new int[] { android.R.attr.defaultValue, R.attr.maxValue, R.attr.textValueMult });
+		final TypedArray ta = c.getResources().obtainAttributes(as, new int[] { android.R.attr.defaultValue, R.attr.textValueMult });
 		mDefault = ta.getInt(0, 300);
-		mMult = ta.getInt(2, 1);
+		mMult = ta.getInt(1, 1);
 		ta.recycle();
 		mView = new FrameLayout(getContext());
         mBar = new TextSeekBar(c, as);
         mBar.setOnSeekBarChangeListener(this);
-        mBar.setTextAppearance(R.style.TextAppearance_AppCompat_Medium);
+        mBar.setTextAppearance(R.style.TextAppearance_AppCompat_Large);
+        mBar.setTextSize(Utils.spPx(getContext(), 20));
         int px = (int)(mBar.getTextSize() * 3 / 2);
         mBar.setPadding(px, 0, px, 0);
 		final FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-        px = (int)Utils.getPx(getContext(), 10);
+        px = (int)Utils.dpPx(getContext(), 10);
         lp.setMargins(px, px * 2, px, px);
         mBar.setLayoutParams(lp);
         mView.addView(mBar);
@@ -46,7 +47,7 @@ public final class SeekBarPreference extends DialogPreference implements SeekBar
 	protected void onPrepareDialogBuilder(final Builder b)
 	{
         b.setTitle(getSummary());
-		mValue = getPersistedInt(mDefault) * mMult;
+		mValue = getPersistedInt(mDefault);
 		mBar.setProgress(mValue / mMult);
 		if (mView.getParent() != null) ((ViewGroup)mView.getParent()).removeView(mView);
 		b.setView(mView);
@@ -56,8 +57,8 @@ public final class SeekBarPreference extends DialogPreference implements SeekBar
 	protected final void onSetInitialValue(final boolean restore, final Object def)  
 	{
 		super.onSetInitialValue(restore, def);
-		if (restore) mValue = getPersistedInt(mDefault) * mMult;
-		else persistInt((mValue = mDefault) / mMult);
+		if (restore) mValue = getPersistedInt(mDefault);
+		else persistInt(mValue = mDefault);
 	}
 
 	@Override
