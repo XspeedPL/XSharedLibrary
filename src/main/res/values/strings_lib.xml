@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_icon">App icon</string>
+
+    <string name="btn_add_new">Add new</string>
+    <string name="btn_remove">Remove</string>
+
+    <string name="diag_update">Reboot your device to complete the updating process\n
+Installed version: %1$d, Active version: %2$d</string>
+
+    <string name="diag_reboot">Activate this module in the Xposed Installer and reboot your device to complete the installation process</string>
+
+    <string name="diag_prf_sav">Preferences saved</string>
+    <string name="diag_pick_app">Pick an application</string>
+
+    <string name="pref_g_general">General options</string>
+
+    <string name="pref_hideapp_t">Hide app icon</string>
+    <string name="pref_hideapp_s">Hide the \"%1$s\" icon from the app drawer</string>
+
+    <string name="pref_theme_t">App theme</string>
+    <string name="pref_theme_s">Choose theme to use within this app</string>
+    <string-array name="pref_theme_e">
+        <item>Default</item>
+        <item>Light</item>
+        <item>Black</item>
+    </string-array>
+
+    <string name="pref_g_fixes">Troubleshooting</string>
+
+    <string name="pref_debuglog_t">Debug log</string>
+    <string name="pref_debuglog_s">Print debug information to the Xposed logs</string>
+
+    <string name="pref_g_info">About</string>
+
+    <string name="pref_authors_t">Contributors and credits</string>
+    <string name="pref_authors_s">Tap to show</string>
+    <!-- Please put "[your language] translator: [your nickname]\n" in the blank line! -->
+    <string name="pref_authors_d">Module creator: Xspeed\n
+English translator: there were none\n
+\n
+Special thanks\n
+Authors of Xposed Framework:\n
+rovo89 &amp; Tungstwenty</string>
+
+    <string name="pref_donate_t">Support development by donating</string>
+    <string name="pref_donate_s">Coders are coffee-operated machines, buy me a coffee :D</string>
+</resources>
