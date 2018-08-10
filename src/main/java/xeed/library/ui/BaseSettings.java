@@ -192,19 +192,28 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
             mPrefs = mActivity.mPrefMgr.getPrefs();
             getPreferenceManager().setSharedPreferencesName(Utils.PREFS_NAME);
             getPreferenceManager().setStorageDeviceProtected();
-            setPreferencesFromResource(R.xml.prefs_common, null);
+            addPreferencesFromResource(R.xml.prefs_common);
+
             try {
                 int label = mActivity.getPackageManager().getActivityInfo(new ComponentName(mActivity, mActivity.getClass()), 0).labelRes;
                 findPreference("hideApp").setSummary(getString(R.string.pref_hideapp_s, getString(label)));
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             try {
                 String ver = mActivity.getPackageManager().getPackageInfo(mActivity.getPackageName(), 0).versionName;
                 String app = getString(mActivity.getApplicationInfo().labelRes);
                 findPreference("version").setSummary(app + " " + ver);
             } catch (PackageManager.NameNotFoundException ignored) {
             }
+
+            String suffix = getString(R.string.pref_authors_s_suffix);
+            if (!suffix.isEmpty()) {
+                Preference p = findPreference("authors");
+                p.setSummary(p.getSummary() + "\n" + suffix);
+            }
+
             mActivity.onCreatePreferences(getPreferenceManager());
 
             Preference screen = findPreference(rootKey);

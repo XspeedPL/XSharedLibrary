@@ -41,6 +41,7 @@ English translator: there were none\n
 Special thanks\n
 Authors of Xposed Framework:\n
 rovo89 &amp; Tungstwenty</string>
+    <string name="pref_authors_s_suffix"></string>
 
     <string name="pref_donate_t">Support development by donating</string>
     <string name="pref_donate_s">Coders are coffee-operated machines, buy me a coffee :D</string>
