@@ -210,8 +210,8 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
 
             String suffix = getString(R.string.pref_authors_s_suffix);
             if (!suffix.isEmpty()) {
-                Preference p = findPreference("authors");
-                p.setSummary(p.getSummary() + "\n" + suffix);
+                TextDialogPreference p = (TextDialogPreference) findPreference("authors");
+                p.setDialogMessage(p.getDialogMessage() + "\n" + suffix);
             }
 
             mActivity.onCreatePreferences(getPreferenceManager());
