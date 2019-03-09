@@ -1,74 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!--
-    colorPrimary – The color of the app bar.
-    colorPrimaryDark – The color of the status bar and contextual app bars; this is normally a dark version of colorPrimary.
-    colorAccent – The color of UI controls such as check boxes, radio buttons, and edit text boxes.
-    windowBackground – The color of the screen background.
-    textColorPrimary – The color of UI text in the app bar.
-    statusBarColor – The color of the status bar.
-    navigationBarColor – The color of the navigation bar.
-    -->
-    <color name="color_1">#FFF1F1F1</color>
-    <color name="color_2">#FFA5A5A5</color>
-    <color name="color_3">#FF5B5B5B</color>
-    <color name="color_4">#FF414141</color>
-    <color name="color_5">#FF0B0B0B</color>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.Compat" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/color_3</item>
-        <item name="colorPrimaryDark">@color/color_4</item>
-        <item name="colorAccent">@color/color_1</item>
+    <color name="primary">#000000</color>
+    <color name="primaryVariant">#000000</color>
+    <color name="lightPrimary">#000000</color>
+    <color name="lightPrimaryVariant">#000000</color>
+
+    <color name="onPrimary">#ffffff</color>
+    <color name="lightOnPrimary">#000000</color>
+
+    <style name="Theme.Compat" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primaryVariant</item>
+        <item name="colorOnPrimary">@color/onPrimary</item>
+        <item name="colorSecondary">@color/primary</item>
+        <item name="colorSecondaryVariant">@color/primaryVariant</item>
+        <item name="colorOnSecondary">@color/onPrimary</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/primary</item>
+        <item name="preferenceTheme">@style/ThemeOverlay.AppCompat.Dark</item>
     </style>
 
-    <style name="Theme.Compat.Light" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/color_1</item>
-        <item name="colorPrimaryDark">@color/color_2</item>
-        <item name="colorAccent">@color/color_4</item>
+    <style name="Theme.Compat.Light" parent="Theme.MaterialComponents.Light">
+        <item name="colorPrimary">@color/lightPrimary</item>
+        <item name="colorPrimaryVariant">@color/lightPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/lightOnPrimary</item>
+        <item name="colorSecondary">@color/lightPrimary</item>
+        <item name="colorSecondaryVariant">@color/lightPrimaryVariant</item>
+        <item name="colorOnSecondary">@color/lightOnPrimary</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/lightPrimary</item>
+        <item name="preferenceTheme">@style/ThemeOverlay.AppCompat.Light</item>
     </style>
 
-    <style name="Theme.Compat.Dialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/color_3</item>
-        <item name="colorPrimaryDark">@color/color_4</item>
-        <item name="colorAccent">@color/color_1</item>
+    <style name="Theme.Compat.Black" parent="Theme.Compat">
+        <item name="colorPrimary">#000000</item>
+        <item name="colorPrimaryVariant">#404040</item>
     </style>
 
-    <style name="Theme.Compat.Light.Dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="colorPrimary">@color/color_1</item>
-        <item name="colorPrimaryDark">@color/color_2</item>
-        <item name="colorAccent">@color/color_4</item>
-    </style>
-
-    <color name="dark00">#FF000000</color>
-    <color name="dark10">#FF0A0A0A</color>
-    <color name="dark20">#FF141414</color>
-    <color name="dark30">#FF1E1E1E</color>
-    <color name="dark40">#FF282828</color>
-    <color name="dark50">#FF323232</color>
-    <color name="dark70">#FF464646</color>
-    <color name="gray">#FF808080</color>
-
-    <style name="Theme.Compat.Black" parent="Theme.AppCompat">
-        <item name="android:windowBackground">@color/dark00</item>
-        <item name="colorPrimary">@color/dark20</item>
-        <item name="colorPrimaryDark">@color/dark10</item>
-        <item name="colorAccent">@color/gray</item>
-        <item name="colorControlNormal">@color/dark50</item>
-        <item name="colorControlActivated">@color/dark70</item>
-        <item name="colorControlHighlight">@color/dark70</item>
-        <item name="colorButtonNormal">@color/dark40</item>
-        <item name="colorSwitchThumbNormal">@color/dark40</item>
-    </style>
-
-    <style name="Theme.Compat.Black.Dialog" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="android:windowBackground">@color/dark00</item>
-        <item name="colorPrimary">@color/dark20</item>
-        <item name="colorPrimaryDark">@color/dark10</item>
-        <item name="colorAccent">@color/gray</item>
-        <item name="colorControlNormal">@color/dark50</item>
-        <item name="colorControlActivated">@color/dark70</item>
-        <item name="colorControlHighlight">@color/dark70</item>
-        <item name="colorButtonNormal">@color/dark40</item>
-        <item name="colorSwitchThumbNormal">@color/dark40</item>
-    </style>
 </resources>

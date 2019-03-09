@@ -159,16 +159,16 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
     }
 
     public static void reloadThemes(SharedPreferences prefs) {
-        int i = prefs.getInt("theme", 0);
-        if (i == 0) {
-            mActTh = R.style.Theme_Compat;
-            mDiagTh = R.style.Theme_Compat_Dialog;
-        } else if (i == 1) {
-            mActTh = R.style.Theme_Compat_Light;
-            mDiagTh = R.style.Theme_Compat_Light_Dialog;
-        } else {
-            mActTh = R.style.Theme_Compat_Black;
-            mDiagTh = R.style.Theme_Compat_Black_Dialog;
+        switch (prefs.getInt("theme", 0)) {
+            case 0:
+                mActTh = R.style.Theme_Compat;
+                break;
+            case 1:
+                mActTh = R.style.Theme_Compat_Light;
+                break;
+            case 2:
+                mActTh = R.style.Theme_Compat_Black;
+                break;
         }
     }
 
