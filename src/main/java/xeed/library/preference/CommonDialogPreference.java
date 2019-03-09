@@ -1,13 +1,14 @@
 package xeed.library.preference;
 
 import android.content.Context;
-import android.support.v7.preference.DialogPreference;
 import android.util.AttributeSet;
+
+import androidx.preference.DialogPreference;
 
 public abstract class CommonDialogPreference<T> extends DialogPreference {
     private T mCurrentValue;
 
-    CommonDialogPreference(Context c, AttributeSet as) {
+    public CommonDialogPreference(Context c, AttributeSet as) {
         super(c, as);
         mCurrentValue = getPersisted();
     }

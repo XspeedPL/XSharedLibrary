@@ -1,8 +1,8 @@
 package xeed.library.preference.internal;
 
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 
+import androidx.appcompat.app.AlertDialog;
 import xeed.library.preference.IntListPreference;
 
 public class IntListFragment extends CommonDialogFragment<Integer, IntListPreference> {

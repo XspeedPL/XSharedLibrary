@@ -9,13 +9,13 @@ import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.widget.AppCompatSeekBar;
 import android.util.AttributeSet;
 import android.widget.AbsSeekBar;
 import android.widget.TextView;
 
 import java.lang.reflect.Field;
 
+import androidx.appcompat.widget.AppCompatSeekBar;
 import xeed.library.common.R;
 import xeed.library.common.Utils;
 
@@ -67,6 +67,7 @@ public final class TextSeekBar extends AppCompatSeekBar {
         return mPaint == null ? 0 : mPaint.getTextSize();
     }
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
     public final Drawable getThumbCompat() {
         if (Build.VERSION.SDK_INT > 15) return getThumb16();
         else {
@@ -74,10 +75,10 @@ public final class TextSeekBar extends AppCompatSeekBar {
                 Field f = AbsSeekBar.class.getDeclaredField("mThumb");
                 f.setAccessible(true);
                 return (Drawable) f.get(this);
-            } catch (Exception ignored) {
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
         }
-        return null;
     }
 
     @TargetApi(16)

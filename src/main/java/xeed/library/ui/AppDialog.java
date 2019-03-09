@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +12,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
+import androidx.appcompat.app.AlertDialog;
 import xeed.library.common.AppInfo;
 import xeed.library.common.R;
 
@@ -29,8 +29,8 @@ public final class AppDialog<T> extends AlertDialog.Builder implements OnItemCli
     private AlertDialog mDialog = null;
 
     @SuppressLint("InflateParams")
-    private AppDialog(Context c, AppInfoCollector<T> aic, AppInfoListener<T> ail, int th) {
-        super(c, th);
+    private AppDialog(Context c, AppInfoCollector<T> aic, AppInfoListener<T> ail) {
+        super(c);
         setTitle(R.string.diag_pick_app);
         setNegativeButton(android.R.string.cancel, null);
         View v = LayoutInflater.from(c).inflate(R.layout.srchdialog, null, false);
@@ -48,8 +48,8 @@ public final class AppDialog<T> extends AlertDialog.Builder implements OnItemCli
         return mDialog = super.create();
     }
 
-    public static <T> AlertDialog create(Context c, AppInfoCollector<T> aic, AppInfoListener<T> ail, int theme) {
-        return new AppDialog<>(c, aic, ail, theme).create();
+    public static <T> AlertDialog create(Context c, AppInfoCollector<T> aic, AppInfoListener<T> ail) {
+        return new AppDialog<>(c, aic, ail).create();
     }
 
     @Override

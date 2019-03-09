@@ -4,13 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.FileObserver;
-import android.support.v4.content.ContextCompat;
 
-import java.io.Closeable;
 import java.io.File;
 
-public class SettingsManager implements Closeable {
-    private static SettingsManager mInstance;
+import androidx.core.content.ContextCompat;
+
+public class SettingsManager {
     private final Context mContext;
     private final PublicPreferences mPrefs;
     private final FileObserver mFileObserver;
@@ -33,14 +32,9 @@ public class SettingsManager implements Closeable {
     }
 
     public static synchronized SettingsManager getInstance(Context context) {
-        if (context == null && mInstance == null)
-            throw new IllegalArgumentException("Context cannot be null");
-
-        if (mInstance == null) {
-            if (context.getApplicationContext() != null) context = context.getApplicationContext();
-            mInstance = new SettingsManager(context);
-        }
-        return mInstance;
+        if (context == null) throw new IllegalArgumentException("Context cannot be null");
+        if (context.getApplicationContext() != null) context = context.getApplicationContext();
+        return new SettingsManager(context);
     }
 
     public void fixFolderPermissionsAsync() {
@@ -76,10 +70,13 @@ public class SettingsManager implements Closeable {
         return mPrefs;
     }
 
-    @Override
-    public void close() {
-        if (mFileObserver != null) {
-            mFileObserver.stopWatching();
-        }
+    public void onPause() {
+        mFileObserver.stopWatching();
+        mPrefs.fixPermissions(true);
+    }
+
+    public void onResume() {
+        mPrefs.fixPermissions(true);
+        mFileObserver.startWatching();
     }
 }

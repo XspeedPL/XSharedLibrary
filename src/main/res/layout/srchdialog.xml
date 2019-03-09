@@ -1,29 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
->
-    <android.support.v7.widget.SearchView
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SearchView
         android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:iconifiedByDefault="false"
-    />
+        app:iconifiedByDefault="false" />
+
     <ProgressBar
         android:id="@android:id/progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminate="false"
-        style="?android:attr/progressBarStyleHorizontal"
-    />
+        style="?android:attr/progressBarStyleHorizontal" />
+
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:requiresFadingEdge="vertical"
-        android:visibility="gone"
-    />
+        android:visibility="gone" />
 </LinearLayout>

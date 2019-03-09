@@ -2,11 +2,11 @@ package xeed.library.preference.internal;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
 
+import androidx.appcompat.app.AlertDialog;
 import xeed.library.common.R;
 import xeed.library.common.Utils;
 import xeed.library.preference.SeekBarPreference;

@@ -9,18 +9,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.pm.PackageInfoCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.preference.DialogPreference;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.Preference.OnPreferenceChangeListener;
-import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.PreferenceGroup;
-import android.support.v7.preference.PreferenceManager;
-import android.support.v7.preference.PreferenceScreen;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
@@ -28,20 +16,33 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.pm.PackageInfoCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.DialogPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
 import xeed.library.common.R;
 import xeed.library.common.SettingsManager;
 import xeed.library.common.Utils;
 import xeed.library.preference.AppListPreference;
 import xeed.library.preference.IntListPreference;
+import xeed.library.preference.RingtonePreference;
 import xeed.library.preference.SeekBarPreference;
 import xeed.library.preference.TextDialogPreference;
 import xeed.library.preference.internal.AppListFragment;
 import xeed.library.preference.internal.IntListFragment;
+import xeed.library.preference.internal.RingtoneFragment;
 import xeed.library.preference.internal.SeekBarFragment;
 import xeed.library.preference.internal.TextDialogFragment;
 
-public abstract class BaseSettings extends AppCompatActivity implements OnPreferenceChangeListener, PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
-    private static int mActTh = R.style.Theme_Compat, mDiagTh = R.style.Theme_Compat_Dialog;
+public abstract class BaseSettings extends AppCompatActivity implements Preference.OnPreferenceChangeListener, PreferenceFragmentCompat.OnPreferenceStartScreenCallback {
+    private static int mActTh = R.style.Theme_Compat;
 
     private SettingsFragment mFrag = null;
     private SettingsManager mPrefMgr = null;
@@ -88,12 +89,12 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
 
     protected final void hideDonations() {
         Preference pref = mFrag.findPreference("donation");
-        PreferenceGroup group = (PreferenceGroup) mFrag.findPreference("g_info");
+        PreferenceGroup group = mFrag.findPreference("g_info");
         group.removePreference(pref);
     }
 
-    protected final void addPreferencesToCategory(int resId, Category cat) {
-        PreferenceGroup group = (PreferenceGroup) mFrag.findPreference(cat == Category.fixes ? "g_fixes" : cat == Category.info ? "g_info" : "g_general");
+    protected final void addPreferencesToCategory(int resId, @SuppressWarnings("SameParameterValue") Category cat) {
+        PreferenceGroup group = mFrag.findPreference(cat == Category.fixes ? "g_fixes" : cat == Category.info ? "g_info" : "g_general");
         PreferenceScreen ps = mFrag.getPreferenceScreen();
         int last = ps.getPreferenceCount();
         mFrag.addPreferencesFromResource(resId);
@@ -113,10 +114,10 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
     @Override
     protected final void onCreate(Bundle b) {
         super.onCreate(b);
-        reloadThemes(getSharedPreferences(Utils.PREFS_NAME, MODE_PRIVATE));
-        setTheme(getActTh());
         mPrefMgr = SettingsManager.getInstance(this);
         mPrefMgr.fixFolderPermissionsAsync();
+        reloadThemes(mPrefMgr.getPrefs());
+        setTheme(getActTh());
         setContentView(R.layout.libsettings);
         long installed = getCurrentVer(this);
         long active = getActiveVer();
@@ -134,9 +135,15 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
     }
 
     @Override
-    protected final void onDestroy() {
-        mPrefMgr.close();
-        super.onDestroy();
+    protected final void onStart() {
+        super.onStart();
+        mPrefMgr.onResume();
+    }
+
+    @Override
+    protected final void onStop() {
+        mPrefMgr.onPause();
+        super.onStop();
     }
 
     private static int getStyleAttribute(Context c, int resId) {
@@ -149,10 +156,6 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
 
     public static int getActTh() {
         return mActTh;
-    }
-
-    public static int getDiagTh() {
-        return mDiagTh;
     }
 
     public static void reloadThemes(SharedPreferences prefs) {
@@ -170,7 +173,7 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
     }
 
     public static final class SettingsFragment extends PreferenceFragmentCompat implements OnSharedPreferenceChangeListener {
-        private static final String DIALOG_FRAGMENT_TAG = "android.support.v7.preference.PreferenceFragment.DIALOG";
+        private static final String DIALOG_FRAGMENT_TAG = "androidx.preference.PreferenceFragment.DIALOG";
 
         private BaseSettings mActivity = null;
         private boolean mChange = false;
@@ -178,7 +181,7 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
 
         @Override
         public final void onStart() {
-            mActivity = (BaseSettings) getActivity();
+            mActivity = (BaseSettings) requireActivity();
             mActivity.mFrag = this;
             super.onStart();
         }
@@ -210,7 +213,7 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
 
             String suffix = getString(R.string.pref_authors_s_suffix);
             if (!suffix.isEmpty()) {
-                TextDialogPreference p = (TextDialogPreference) findPreference("authors");
+                TextDialogPreference p = findPreference("authors");
                 p.setDialogMessage(p.getDialogMessage() + "\n" + suffix);
             }
 
@@ -231,7 +234,7 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
                 reloadThemes(sp);
                 mActivity.finish();
             } else mChange = true;
-            mActivity.onPreferenceChanged(getPreferenceManager(), getPreferenceManager().getSharedPreferences(), key);
+            mActivity.onPreferenceChanged(getPreferenceManager(), mPrefs, key);
         }
 
         @Override
@@ -290,18 +293,19 @@ public abstract class BaseSettings extends AppCompatActivity implements OnPrefer
                 super.onDisplayPreferenceDialog(pref);
             }
         }
+    }
 
-        private static HashMap<Class, Class<? extends DialogFragment>> DIALOG_REGISTRY = new HashMap<>();
+    private static final HashMap<Class, Class<? extends DialogFragment>> DIALOG_REGISTRY = new HashMap<>();
 
-        static {
-            registerDialog(IntListPreference.class, IntListFragment.class);
-            registerDialog(SeekBarPreference.class, SeekBarFragment.class);
-            registerDialog(AppListPreference.class, AppListFragment.class);
-            registerDialog(TextDialogPreference.class, TextDialogFragment.class);
-        }
+    static {
+        registerDialog(IntListPreference.class, IntListFragment.class);
+        registerDialog(SeekBarPreference.class, SeekBarFragment.class);
+        registerDialog(AppListPreference.class, AppListFragment.class);
+        registerDialog(TextDialogPreference.class, TextDialogFragment.class);
+        registerDialog(RingtonePreference.class, RingtoneFragment.class);
+    }
 
-        public static void registerDialog(Class<? extends DialogPreference> prefClass, Class<? extends DialogFragment> dlgClass) {
-            DIALOG_REGISTRY.put(prefClass, dlgClass);
-        }
+    public static void registerDialog(Class<? extends DialogPreference> prefClass, Class<? extends DialogFragment> dlgClass) {
+        DIALOG_REGISTRY.put(prefClass, dlgClass);
     }
 }

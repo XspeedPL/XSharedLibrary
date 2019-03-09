@@ -19,14 +19,14 @@ public class PublicPreferences implements SharedPreferences {
         void onSharedPreferenceChangeCommited();
     }
 
-    private String mPrefsName;
-    private Context mContext;
-    private SharedPreferences mPrefs;
+    private final String mPrefsName;
+    private final Context mContext;
+    private final SharedPreferences mPrefs;
     private OnPreferencesCommitedListener mOnPreferencesCommitedListener;
     private OnSharedPreferenceChangeCommitedListener mOnSharedPreferenceChangeCommitedListener;
     private EditorWrapper mEditorWrapper;
     private boolean mSelfAttrChange;
-    private Handler mHandler;
+    private final Handler mHandler;
 
     public PublicPreferences(Context ctx, String prefsName) {
         mContext = ctx;
@@ -125,7 +125,7 @@ public class PublicPreferences implements SharedPreferences {
 
     @SuppressLint("SetWorldReadable")
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void fixPermissions(boolean force) {
+    void fixPermissions(boolean force) {
         File sharedPrefsFolder = new File(mContext.getFilesDir().getParentFile(), "shared_prefs");
         if (sharedPrefsFolder.exists()) {
             sharedPrefsFolder.setExecutable(true, false);
@@ -138,10 +138,6 @@ public class PublicPreferences implements SharedPreferences {
         }
     }
 
-    private void fixPermissions() {
-        fixPermissions(false);
-    }
-
     public void onFileAttributesChanged(String path) {
         if (path != null && path.endsWith(mPrefsName + ".xml")) {
             if (mSelfAttrChange) {
@@ -150,7 +146,7 @@ public class PublicPreferences implements SharedPreferences {
                 return;
             }
             Log.d(Utils.TAG, "onFileAttributesChanged: " + mPrefsName + "; calling fixPermissions()");
-            fixPermissions();
+            fixPermissions(false);
         }
     }
 
@@ -175,7 +171,7 @@ public class PublicPreferences implements SharedPreferences {
         mHandler.postDelayed(mSharedPreferenceChangeCommitedRunnable, 100);
     }
 
-    private Runnable mPreferencesCommitedRunnable = new Runnable() {
+    private final Runnable mPreferencesCommitedRunnable = new Runnable() {
         @Override
         public void run() {
             if (mOnPreferencesCommitedListener != null) {
@@ -185,7 +181,7 @@ public class PublicPreferences implements SharedPreferences {
         }
     };
 
-    private Runnable mSharedPreferenceChangeCommitedRunnable = new Runnable() {
+    private final Runnable mSharedPreferenceChangeCommitedRunnable = new Runnable() {
         @Override
         public void run() {
             if (mOnSharedPreferenceChangeCommitedListener != null) {
@@ -196,7 +192,7 @@ public class PublicPreferences implements SharedPreferences {
 
     public class EditorWrapper implements SharedPreferences.Editor {
 
-        private SharedPreferences.Editor mEditor;
+        private final SharedPreferences.Editor mEditor;
 
         EditorWrapper(SharedPreferences.Editor editor) {
             mEditor = editor;

@@ -1,8 +1,8 @@
 package xeed.library.preference.internal;
 
-import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.PreferenceDialogFragmentCompat;
-
+import androidx.annotation.CallSuper;
+import androidx.appcompat.app.AlertDialog;
+import androidx.preference.PreferenceDialogFragmentCompat;
 import xeed.library.preference.CommonDialogPreference;
 
 public abstract class CommonDialogFragment<T, R extends CommonDialogPreference<T>> extends PreferenceDialogFragmentCompat {
@@ -15,7 +15,8 @@ public abstract class CommonDialogFragment<T, R extends CommonDialogPreference<T
     }
 
     @Override
-    public final void onDialogClosed(boolean result) {
+    @CallSuper
+    public void onDialogClosed(boolean result) {
         if (result && getPreference().callChangeListener(mCurrentValue)) {
             getPreference().setValue(mCurrentValue);
         }

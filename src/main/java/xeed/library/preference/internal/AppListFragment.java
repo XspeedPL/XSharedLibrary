@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import androidx.appcompat.app.AlertDialog;
 import xeed.library.common.AppInfo;
 import xeed.library.common.R;
 import xeed.library.common.Utils;
 import xeed.library.preference.AppListPreference;
 import xeed.library.ui.AppDialog;
-import xeed.library.ui.BaseSettings;
 
 public class AppListFragment extends CommonDialogFragment<String, AppListPreference> {
     private final ArrayList<AppInfo<String>> mData = new ArrayList<>();
@@ -89,7 +88,7 @@ public class AppListFragment extends CommonDialogFragment<String, AppListPrefere
                             ((BaseAdapter) mView.getAdapter()).notifyDataSetChanged();
                         }
                     }
-                }, BaseSettings.getDiagTh()).show();
+                }).show();
             }
         });
     }

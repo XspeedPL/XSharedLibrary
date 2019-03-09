@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Build;
-import android.support.annotation.CallSuper;
 
 import java.io.File;
 
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.IXposedHookZygoteInit;
+import androidx.annotation.CallSuper;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
@@ -20,22 +18,24 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 import xeed.library.common.Utils;
 
-public abstract class BaseModule implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public abstract class BaseModule implements Module {
     protected static final int SDK = Build.VERSION.SDK_INT;
 
-    private final String mPackage;
+    protected final String mPackage;
     protected XSharedPreferences mPrefs = null;
     protected Context mCtx = null;
 
     private boolean mDebug;
 
-    protected abstract long getVersion();
+    @Override
+    public abstract long getVersion();
 
     protected abstract String getLogTag();
 
     protected abstract void reloadPrefs(Intent i);
 
-    protected String getMainPackage() {
+    @Override
+    public String getMainPackage() {
         return "android";
     }
 
@@ -46,7 +46,8 @@ public abstract class BaseModule implements IXposedHookLoadPackage, IXposedHookZ
     protected void initPWM(Object pwm) {
     }
 
-    protected String getModulePackage() {
+    @Override
+    public String getModulePackage() {
         return getClass().getPackage().getName();
     }
 
@@ -54,20 +55,24 @@ public abstract class BaseModule implements IXposedHookLoadPackage, IXposedHookZ
         mPackage = getModulePackage();
     }
 
+    @Override
     public final void log(String txt) {
         XposedBridge.log(getLogTag() + ": " + txt);
     }
 
+    @Override
     public final void dlog(String txt) {
         if (mDebug) log(txt);
     }
 
+    @Override
     public final void log(Throwable t) {
         XposedBridge.log(getLogTag() + ": EXCEPTION");
         XposedBridge.log(t);
     }
 
     @Override
+    @CallSuper
     public void initZygote(StartupParam param) {
         File f = new File("/data/" + Utils.getDataDir() + mPackage + "/shared_prefs/" + Utils.PREFS_NAME + ".xml");
         mPrefs = new XSharedPreferences(f);

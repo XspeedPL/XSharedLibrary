@@ -11,6 +11,7 @@ Installed version: %1$d, Active version: %2$d</string>
 
     <string name="diag_prf_sav">Preferences saved</string>
     <string name="diag_pick_app">Pick an application</string>
+    <string name="diag_default">Default</string>
 
     <string name="pref_g_general">General options</string>
 
@@ -20,9 +21,8 @@ Installed version: %1$d, Active version: %2$d</string>
     <string name="pref_theme_t">App theme</string>
     <string name="pref_theme_s">Choose theme to use within this app</string>
     <string-array name="pref_theme_e">
-        <item>Default</item>
+        <item>Dark</item>
         <item>Light</item>
-        <item>Black</item>
     </string-array>
 
     <string name="pref_g_fixes">Troubleshooting</string>
