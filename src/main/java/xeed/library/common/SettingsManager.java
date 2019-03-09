@@ -3,6 +3,7 @@ package xeed.library.common;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.FileObserver;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class SettingsManager {
     private final FileObserver mFileObserver;
 
     private SettingsManager(Context context) {
-        mContext = !ContextCompat.isDeviceProtectedStorage(context)
+        mContext = Build.VERSION.SDK_INT >= 24 && !ContextCompat.isDeviceProtectedStorage(context)
                 ? ContextCompat.createDeviceProtectedStorageContext(context) : context;
         mPrefs = new PublicPreferences(mContext, Utils.PREFS_NAME);
 
