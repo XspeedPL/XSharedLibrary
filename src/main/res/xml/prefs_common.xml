@@ -37,7 +37,7 @@
             android:summary="@string/pref_donate_s">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=xspeedpl%40windowslive.com&amp;no_shipping=1&amp;item_name=Android%20Development%20Support" />
+                android:data="https://www.paypal.me/xspeedpl" />
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
