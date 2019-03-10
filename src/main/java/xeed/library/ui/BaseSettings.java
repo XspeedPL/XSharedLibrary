@@ -17,7 +17,6 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.PackageInfoCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -124,8 +123,6 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
         if (installed != active) {
             TextView tv = findViewById(R.id.update_msg);
             tv.setVisibility(View.VISIBLE);
-            tv.setBackgroundResource(getStyleAttribute(this, R.attr.colorPrimary));
-            tv.setTextColor(ContextCompat.getColor(this, getStyleAttribute(this, R.attr.colorAccent)));
             if (active == -1) tv.setText(R.string.diag_reboot);
             else tv.setText(getString(R.string.diag_update, installed, active));
         }

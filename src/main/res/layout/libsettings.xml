@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
->
+    android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/update_msg"
         android:layout_width="match_parent"
@@ -17,11 +16,11 @@
         android:textSize="14sp"
         android:visibility="gone"
         android:textStyle="bold"
-        tools:ignore="UnusedAttribute"
-    />
+        android:background="?colorPrimary"
+        tools:ignore="UnusedAttribute" />
+
     <FrameLayout
         android:id="@+id/fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-    />
+        android:layout_height="match_parent" />
 </LinearLayout>
