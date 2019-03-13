@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +43,12 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
 
     private SettingsFragment mFrag = null;
     private SettingsManager mPrefMgr = null;
+
+    @Override
+    public void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        mPrefMgr = SettingsManager.getInstance(this);
+    }
 
     protected void onCreatePreferences(PreferenceManager mgr) {
     }
@@ -113,7 +117,6 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
     @Override
     protected final void onCreate(Bundle b) {
         super.onCreate(b);
-        mPrefMgr = SettingsManager.getInstance(this);
         mPrefMgr.fixFolderPermissionsAsync();
         reloadThemes(mPrefMgr.getPrefs());
         setTheme(getActTh());
@@ -143,14 +146,6 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
         super.onStop();
     }
 
-    private static int getStyleAttribute(Context c, int resId) {
-        TypedValue tv = new TypedValue();
-        TypedArray a = c.obtainStyledAttributes(tv.data, new int[]{resId});
-        int ret = a.getResourceId(0, 0);
-        a.recycle();
-        return ret;
-    }
-
     public static int getActTh() {
         return mActTh;
     }
@@ -176,17 +171,10 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
         private boolean mChange = false;
         protected SharedPreferences mPrefs = null;
 
-        @Override
-        public final void onStart() {
-            mActivity = (BaseSettings) requireActivity();
-            mActivity.mFrag = this;
-            super.onStart();
-        }
-
         @SuppressWarnings("ConstantConditions")
         @Override
         public final void onCreatePreferences(Bundle b, String rootKey) {
-            mActivity = (BaseSettings) getActivity();
+            mActivity = (BaseSettings) requireActivity();
             mActivity.mFrag = this;
 
             mPrefs = mActivity.mPrefMgr.getPrefs();
@@ -229,7 +217,7 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
                 mActivity.getPackageManager().setComponentEnabledSetting(cn, sp.getBoolean(key, false) ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
             } else if ("theme".equals(key)) {
                 reloadThemes(sp);
-                mActivity.finish();
+                mActivity.recreate();
             } else mChange = true;
             mActivity.onPreferenceChanged(getPreferenceManager(), mPrefs, key);
         }

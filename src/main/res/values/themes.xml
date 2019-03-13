@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <color name="primary">#000000</color>
+    <color name="primary">#666666</color>
     <color name="primaryVariant">#000000</color>
-    <color name="lightPrimary">#000000</color>
-    <color name="lightPrimaryVariant">#000000</color>
+    <color name="lightPrimary">#ffffff</color>
+    <color name="lightPrimaryVariant">#bbbbbb</color>
 
     <color name="onPrimary">#ffffff</color>
     <color name="lightOnPrimary">#000000</color>
@@ -35,5 +35,4 @@
         <item name="colorPrimary">#000000</item>
         <item name="colorPrimaryVariant">#404040</item>
     </style>
-
 </resources>
