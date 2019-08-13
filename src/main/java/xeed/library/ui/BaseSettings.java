@@ -12,9 +12,8 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.HashMap;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.pm.PackageInfoCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -24,6 +23,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
+
+import java.util.HashMap;
+
 import xeed.library.common.R;
 import xeed.library.common.SettingsManager;
 import xeed.library.common.Utils;
@@ -92,12 +94,12 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
 
     protected final void hideDonations() {
         Preference pref = mFrag.findPreference("donation");
-        PreferenceGroup group = mFrag.findPreference("g_info");
+        PreferenceGroup group = (PreferenceGroup) mFrag.findPreference("g_info");
         group.removePreference(pref);
     }
 
     protected final void addPreferencesToCategory(int resId, @SuppressWarnings("SameParameterValue") Category cat) {
-        PreferenceGroup group = mFrag.findPreference(cat == Category.fixes ? "g_fixes" : cat == Category.info ? "g_info" : "g_general");
+        PreferenceGroup group = (PreferenceGroup) mFrag.findPreference(cat == Category.fixes ? "g_fixes" : cat == Category.info ? "g_info" : "g_general");
         PreferenceScreen ps = mFrag.getPreferenceScreen();
         int last = ps.getPreferenceCount();
         mFrag.addPreferencesFromResource(resId);
@@ -118,7 +120,11 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
     protected final void onCreate(Bundle b) {
         super.onCreate(b);
         mPrefMgr.fixFolderPermissionsAsync();
-        reloadThemes(mPrefMgr.getPrefs());
+
+        Context ctx = ContextCompat.createDeviceProtectedStorageContext(this);
+        if (ctx == null) ctx = this;
+
+        reloadThemes(ctx.getSharedPreferences(Utils.PREFS_NAME, MODE_PRIVATE));
         setTheme(getActTh());
         setContentView(R.layout.libsettings);
         long installed = getCurrentVer(this);
@@ -177,9 +183,9 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
             mActivity = (BaseSettings) requireActivity();
             mActivity.mFrag = this;
 
-            mPrefs = mActivity.mPrefMgr.getPrefs();
             getPreferenceManager().setSharedPreferencesName(Utils.PREFS_NAME);
             getPreferenceManager().setStorageDeviceProtected();
+            mPrefs = getPreferenceManager().getSharedPreferences();
             addPreferencesFromResource(R.xml.prefs_common);
 
             try {
@@ -198,15 +204,17 @@ public abstract class BaseSettings extends AppCompatActivity implements Preferen
 
             String suffix = getString(R.string.pref_authors_s_suffix);
             if (!suffix.isEmpty()) {
-                TextDialogPreference p = findPreference("authors");
+                TextDialogPreference p = (TextDialogPreference) findPreference("authors");
                 p.setDialogMessage(p.getDialogMessage() + "\n" + suffix);
             }
 
             mActivity.onCreatePreferences(getPreferenceManager());
 
-            Preference screen = findPreference(rootKey);
-            if (screen instanceof PreferenceScreen) {
-                setPreferenceScreen((PreferenceScreen) screen);
+            if (rootKey != null) {
+                Preference screen = findPreference(rootKey);
+                if (screen instanceof PreferenceScreen) {
+                    setPreferenceScreen((PreferenceScreen) screen);
+                }
             }
         }
 

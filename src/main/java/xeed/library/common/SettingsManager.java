@@ -5,28 +5,28 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.FileObserver;
-
-import java.io.File;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
+import java.io.File;
+
 public class SettingsManager {
     private final Context mContext;
-    private final PublicPreferences mPrefs;
     private final FileObserver mFileObserver;
+    private boolean mSelfAttrChange;
 
     private SettingsManager(Context context) {
         mContext = Build.VERSION.SDK_INT >= 24 && !ContextCompat.isDeviceProtectedStorage(context)
                 ? ContextCompat.createDeviceProtectedStorageContext(context) : context;
-        mPrefs = new PublicPreferences(mContext, Utils.PREFS_NAME);
 
-        mFileObserver = new FileObserver(mContext.getFilesDir().getParentFile() + "/shared_prefs", FileObserver.ATTRIB | FileObserver.CLOSE_WRITE) {
+        fixPermissions(true);
+
+        mFileObserver = new FileObserver(mContext.getFilesDir().getParentFile() + "/shared_prefs", FileObserver.ATTRIB) {
             @Override
             public void onEvent(int event, String path) {
                 if ((event & FileObserver.ATTRIB) != 0)
-                    mPrefs.onFileAttributesChanged(path);
-                if ((event & FileObserver.CLOSE_WRITE) != 0)
-                    mPrefs.onFileUpdated(path);
+                    onFileAttributesChanged(path);
             }
         };
         mFileObserver.startWatching();
@@ -67,17 +67,40 @@ public class SettingsManager {
         });
     }
 
-    public PublicPreferences getPrefs() {
-        return mPrefs;
+    @SuppressLint("SetWorldReadable")
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void fixPermissions(boolean force) {
+        File sharedPrefsFolder = new File(mContext.getFilesDir().getParentFile(), "shared_prefs");
+        if (sharedPrefsFolder.exists()) {
+            sharedPrefsFolder.setExecutable(true, false);
+            sharedPrefsFolder.setReadable(true, false);
+            File f = new File(sharedPrefsFolder, Utils.PREFS_NAME + ".xml");
+            if (f.exists()) {
+                mSelfAttrChange = !force;
+                f.setReadable(true, false);
+            }
+        }
+    }
+
+    private void onFileAttributesChanged(String path) {
+        if (path != null && path.endsWith(Utils.PREFS_NAME + ".xml")) {
+            if (mSelfAttrChange) {
+                mSelfAttrChange = false;
+                Log.d(Utils.TAG, "onFileAttributesChanged: ignoring self change");
+                return;
+            }
+            Log.d(Utils.TAG, "onFileAttributesChanged: calling fixPermissions()");
+            fixPermissions(false);
+        }
     }
 
     public void onPause() {
         mFileObserver.stopWatching();
-        mPrefs.fixPermissions(true);
+        fixPermissions(true);
     }
 
     public void onResume() {
-        mPrefs.fixPermissions(true);
+        fixPermissions(true);
         mFileObserver.startWatching();
     }
 }
