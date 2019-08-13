@@ -6,10 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.os.Build;
-
-import java.io.File;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XSharedPreferences;
@@ -25,6 +29,7 @@ public abstract class BaseModule implements Module {
     protected XSharedPreferences mPrefs = null;
     protected Context mCtx = null;
 
+    private FileWriter mLogger;
     private boolean mDebug;
 
     @Override
@@ -58,6 +63,12 @@ public abstract class BaseModule implements Module {
     @Override
     public final void log(String txt) {
         XposedBridge.log(getLogTag() + ": " + txt);
+
+        try {
+            mLogger.append(txt + "\n");
+            mLogger.flush();
+        } catch (IOException ignored) {
+        }
     }
 
     @Override
@@ -69,6 +80,13 @@ public abstract class BaseModule implements Module {
     public final void log(Throwable t) {
         XposedBridge.log(getLogTag() + ": EXCEPTION");
         XposedBridge.log(t);
+
+        try {
+            mLogger.append(getLogTag() + ": EXCEPTION\n");
+            mLogger.append(Log.getStackTraceString(t) + "\n");
+            mLogger.flush();
+        } catch (IOException ignored) {
+        }
     }
 
     @Override
@@ -82,13 +100,27 @@ public abstract class BaseModule implements Module {
     @CallSuper
     public void handleLoadPackage(LoadPackageParam param) throws Throwable {
         if (param.packageName.equals("android")) {
+            try {
+                mLogger = new FileWriter("/cache/" + mPackage + System.currentTimeMillis() + ".log", false);
+                mLogger.append("-------------------------\n");
+            } catch (IOException ignored) {
+            }
+
             log("Android version " + SDK + ", module version " + getVersion());
             if (shouldHookPWM()) {
-                Class<?> cPWM = tryFindClass(param.classLoader, ClassDB.PHONE_WINDOW_MANAGER);
+                Class<?> cPWM = tryFindClass(param.classLoader, false, ClassDB.PHONE_WINDOW_MANAGER);
                 XposedBridge.hookAllMethods(cPWM, "init", handlePWMI);
             }
         }
         if (param.packageName.equals(getMainPackage())) {
+            if (mLogger == null) {
+                try {
+                    mLogger = new FileWriter("/cache/" + mPackage + System.currentTimeMillis() + ".log", false);
+                    mLogger.append("-------------------------\n");
+                } catch (IOException ignored) {
+                }
+            }
+
             mDebug = mPrefs.getBoolean("debugLog", false);
             log("Debug log is " + (mDebug ? "en" : "dis") + "abled");
             reloadPrefs(new Intent());
@@ -98,13 +130,13 @@ public abstract class BaseModule implements Module {
         }
     }
 
-    protected static Class<?> tryFindClass(ClassLoader loader, String... names) {
-        for (String s : names)
-            try {
-                Class<?> c = XposedHelpers.findClass(s, loader);
-                if (c != null) return c;
-            } catch (Throwable ignored) {
-            }
+    protected static Class<?> tryFindClass(ClassLoader loader, boolean optional, String... names) {
+        Class<?> c;
+        for (String s : names) {
+            c = XposedHelpers.findClassIfExists(s, loader);
+            if (c != null) return c;
+        }
+        if (optional) return null;
         throw new RuntimeException("Class not found: " + names[0].substring(names[0].lastIndexOf(".") + 1));
     }
 
