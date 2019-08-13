@@ -14,15 +14,13 @@ android {
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
     compileOnly project(':hax')
-
-    implementation 'androidx.appcompat:appcompat:+'
-    implementation 'androidx.preference:preference:+'
-    implementation 'com.google.android.material:material:+'
-
     compileOnly 'de.robv.android.xposed:api:+'
+
+    api 'androidx.appcompat:appcompat:+'
+    api 'androidx.preference:preference:+'
+    api 'com.google.android.material:material:1.1.0-alpha07'
 }
